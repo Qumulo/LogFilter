@@ -297,6 +297,7 @@ There are two main sections in the configuration file `log_filter.json`.
    - `port` - Port number.
  
 2. Log Details
+
 **IMPORTANT!!** *If you leave empty the below definitions, the script will generate a conditional definition for log forwarding to the defined remote host over TCP or UPD port.*
 
 **IMPORTANT!!** *If you define any of the below definitions, the script will generate a conditional definition for filtering the defined parameters and forwarding them to the remote host. Other logs won't be seen on the remote host*
