@@ -1,0 +1,29 @@
+# +-+-+-+-+-+-+ +-+-+ +-+-+-+ +-+-+-+-+-+ +-+-+-+-+ +-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ 
+# |P|L|E|A|S|E| |D|O| |N|O|T| |T|O|U|C|H| |T|H|I|S| |F|I|L|E|S| |M|A|N|U|A|L|L|Y|!|!|!| 
+# +-+-+-+-+-+-+ +-+-+ +-+-+-+ +-+-+-+-+-+ +-+-+-+-+ +-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+
+
+# Log file name:"/var/log/<node-hostname>.log"
+template(name="QumuloFileName" type="list") {
+  constant(value="/var/log/")
+  property(name="hostname")
+  constant(value=".log")
+}
+
+# Log message format: "timestamp,audit-msg-csv-fields..."
+
+template(name="QumuloAuditFormat" type="list"){ 
+  property(name="timestamp" dateFormat="rfc3339")
+  constant(value=",")
+  property(name="msg")
+  constant(value="\n")
+}
+
+# 2022-03-11T00:14:48.707799Z,10.100.246.152,"admin",api,nfs_delete_export,ok,9,"/PSS",""
+set $!client_ip = field($msg, 44 ,1);
+set $!user = field($msg, 44 ,2);
+set $!protocol = field($msg, 44 ,3);
+set $!operation = field($msg, 44 ,4);
+set $!result = field($msg, 44 ,5);
+set $!id = field($msg, 44 ,6);
+set $!file_path_1 = field($msg, 44 ,7);
+set $!file_path_2 = field($msg, 44 ,8);
