@@ -298,8 +298,11 @@ There are two main sections in the configuration file `log_filter.json`.
  
 2. Log Details
 **IMPORTANT!!** *If you leave empty the below definitions, the script will generate a conditional definition for log forwarding to the defined remote host over TCP or UPD port.*
+
 **IMPORTANT!!** *If you define any of the below definitions, the script will generate a conditional definition for filtering the defined parameters and forwarding them to the remote host. Other logs won't be seen on the remote host*
+
 **IMPORTANT!!** *If you define any of the below definitions with `!` like `!fs_list_directory`, the script will generate a conditional definition for excluding the defined parameters and the other logs will be forwarded to the remote host.*
+
 **IMPORTANT!!** *Multiple parameters can be defined with command seperated inside the square brackets.*
 
    - `client_ips` - Client ip addresses can be specified for the filtering. Example: `"10.0.0.1"`, `"10.0.0.1","10.0.0.2"`.
