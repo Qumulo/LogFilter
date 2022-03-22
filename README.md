@@ -264,41 +264,42 @@ input(type="imtcp" port="514")
 
 ## Define Parameters and Run LogFilter.py Script
 
-In the directory `config`, there is a file called `log_filter.json` that must be modified in order to run the report.
+In the directory `config`, there is a file called `log_filter.json` that must be modified in order to run the LogFilter script.
 
-This application depends upon the file name `log_filter.json` in the subdirectory `config`. Due to that restriction, this file and the diretory it is contained in should not be moved or renamed.
+This application depends upon the file name `log_filter.json` in the subdirectory `config`. Due to that restriction, this file and the directory it is contained in should not be moved or renamed.
 
 Here is the empty file and, in the following paragraphs, we will describe each field
 and their proper values. Multiple definitions can be defined inside the square brackets.
 
 ```
 [
-    {
+   {
       "hostname": "",
       "port_type": "",
       "port": "",
-      "log_details": {
-        "client_ips" : [],
-        "users" : [],
-        "protocols": [],
-        "operations": [],
-        "results": [],
-        "ids": [],
-        "file_path_1s": [],
-        "file_path_2s": []
+      "log_details": 
+      {
+         "client_ips" : [],
+         "users" : [],
+         "protocols": [],
+         "operations": [],
+         "results": [],
+         "ids": [],
+         "file_path_1s": [],
+         "file_path_2s": []
       }
-    }
+   }
 ]
 ```
 There are two main sections in the configuration file `log_filter.json`. 
 1. Remote Host Details
-   - `hostname` - FQDN or IP address of the machine that Qumulo audit logs will be forwarded.
-   - `port_type` - `tcp`, `udp` port type.
+   - `hostname` - FQDN or IP address of the machine that Qumulo audit logs will be forwarded to.
+   - `port_type` - `tcp` or `udp`
    - `port` - Port number.
  
 2. Log Details
 
-**IMPORTANT!!** *If you leave empty the below definitions, the script will generate a conditional definition for log forwarding to the defined remote host over TCP or UPD port.*
+**IMPORTANT!!** *If you leave any of the below definitions empty, the script will generate a conditional definition for log forwarding to the defined remote host over the TCP or UDP port.*
 
 **IMPORTANT!!** *If you define any of the below definitions, the script will generate a conditional definition for filtering the defined parameters and forwarding them to the remote host. Other logs won't be seen on the remote host*
 
@@ -306,14 +307,14 @@ There are two main sections in the configuration file `log_filter.json`.
 
 **IMPORTANT!!** *Multiple parameters can be defined with command seperated inside the square brackets.*
 
-   - `client_ips` - Client ip addresses can be specified for the filtering. Example: `"10.0.0.1"`, `"10.0.0.1","10.0.0.2"`.
-   - `users` - Users can be specified for the filtering. Example: `"user01"` , `"AD\user01"`.
-   - `protocols` - Protocols can be specified for the filtering. Example: `"nfs3"`,  `"smb3"`,  and `"api"`.
-   - `operations` - Operations can be specified for the filtering. Example: `"fs_create_file"`, `"smb_login"`.
-   - `results` - Results can be specified for the filtering. Example: `"ok"`, `"fs_not_a_file_error"`.
-   - `ids` - Ids can be specified for the filtering. Example: `"10001"`
-   - `file_paths_1s` - Original file paths can be specified for the filtering. Example: `"/home/user01"`, `"/smb_share1"`.
-   - `file_paths_2s` - Secondary file paths can be specified for the filtering. Example: `"/home/user01"`, `"/smb_share1"` 
+   - `client_ips` - Client ip addresses can be specified for filtering. Example: `"10.0.0.1"`, `"10.0.0.1","10.0.0.2"`.
+   - `users` - Users can be specified for filtering. Example: `"user01"` , `"AD\user01"`.
+   - `protocols` - Protocols can be specified for filtering. Example: `"nfs3"`,  `"smb3"`,  and `"api"`.
+   - `operations` - Operations can be specified for filtering. Example: `"fs_create_file"`, `"smb_login"`.
+   - `results` - Results can be specified for filtering. Example: `"ok"`, `"fs_not_a_file_error"`.
+   - `ids` - Ids can be specified for filtering. Example: `"10001"`
+   - `file_paths_1s` - Original file paths can be specified for filtering. Example: `"/home/user01"`, `"/smb_share1"`.
+   - `file_paths_2s` - Secondary file paths can be specified for filtering. Example: `"/home/user01"`, `"/smb_share1"` 
 
 Please [Qumulo audit log details](#log-field-definitions) section for more details about the log structure.
 
