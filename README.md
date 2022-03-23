@@ -14,7 +14,7 @@ Configuring Rsyslog to filter and forward Qumulo audit logs to the different tar
    * [Why would I use UDP for rsyslog data?](#why-would-i-use-udp-for-rsyslog-data)
    * [Getting Started](#getting-started)
    * [Configuration with rsyslog](#configuration-with-rsyslog)
-   * [Define Parameters and Run LogFilter.py Script](#define-parameters-and-run-logfilterpy-script)
+   * [Define Parameters and Run LogFilter Script](#define-parameters-and-run-logfilter-script)
    * [JSON File Examples](#json-file-examples)
    * [Help](#help)
    * [Copyright](#copyright)
@@ -240,11 +240,11 @@ drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 config
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 docs
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 outputs
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 utils
--rwxr-xr-x  1 someone  somegroup   301 Mar 17 08:24 LogFilter.py
+-rwxr-xr-x  1 someone  somegroup   301 Mar 17 08:24 LogFilter
 ```
 Of course, the owner will not be `someone` and the group will not be `somegroup`, but will show you as the owner and the group as whatever group you currently belong to. If in doubt, simply type `id -gn` to see your current group and `id -un` to see your current login id.
 
-You will need to modify the **log_filter.json** file under **config** and then run **LogFilter.py** file to run in your environment. Let us start with the configurations.
+You will need to modify the **log_filter.json** file under **config** and then run **LogFilter** file to run in your environment. Let us start with the configurations.
 
 ## Configuration with Rsyslog
 
@@ -263,7 +263,7 @@ module(load="imtcp")
 input(type="imtcp" port="514")
 ```
 
-## Define Parameters and Run LogFilter.py Script
+## Define Parameters and Run LogFilter Script
 
 In the directory `config`, there is a file called `log_filter.json` that must be modified in order to run the LogFilter script.
 
@@ -404,24 +404,24 @@ All other log messages **NOT** excluded are forwarded to the hostname and port s
 ]
 ```
 
-### Create the new Qumulo audit Log configuration via LogFilter.py script
-**LogFilter.py** is the main script file that allow you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
+### Create the new Qumulo audit Log configuration via LogFilter script
+**LogFilter** is the main script file that allow you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
 
 Run the script in this directory by typing 
 
-`./LogFilter.py --config ./config/log_filters.json` 
+`./LogFilter --config ./config/log_filters.json` 
 
 in a terminal window. If there are no errors, a rsyslog configuration file will be created in **outputs** directory.
 
 ### Verify the configuration file
 
-Before copying the configuration file that you created via **LogFilter.py**, you can verify the config file doesn't have any syntax error with the command below.
+Before copying the configuration file that you created via **LogFilter**, you can verify the config file doesn't have any syntax error with the command below.
 
 `rsyslogd -f ./outputs/10-qumulo-audit.conf -N7`
 
 ### Copy the new configuration file 
 Rsyslog loads dedicated log file format definitions from the **/etc/rsyslog.d** directory. You will need
-to create a new configuration file (**10-qumulo-audit.conf** inside **outputs**) via **LogFilter.py**  script for defining the Qumulo Audit Log format.
+to create a new configuration file (**10-qumulo-audit.conf** inside **outputs**) via **LogFilter**  script for defining the Qumulo Audit Log format.
 
 Simply copy this file into **/etc/rsyslog.d**. 
 
