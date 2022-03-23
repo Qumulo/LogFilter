@@ -121,7 +121,7 @@ class LogFilter(object):
                 
                 self.conf_file.write("\n\t) then {\n") 
             
-            self.conf_file.write("\t\taction(type=\"omfwd\" target=\""+self.hostname+"\" port=\""+self.port+"\" protocol=\""+self.port_type+"\")\n\t}\n")
+            self.conf_file.write("\t\taction(type=\"omfwd\" target=\""+self.hostname+"\" port=\""+self.port+"\" protocol=\""+self.port_type+"\" template=\"QumuloAuditFormat\")\n\t}\n")
             self.conf_file.write("\telse\n")
             self.conf_file.write("\t\taction(type=\"omfile\" file=\"/dev/null\" template=\"QumuloAuditFormat\")\n")
             self.conf_file.write(self.ending+"\n\n")
