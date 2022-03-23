@@ -322,77 +322,87 @@ Please [Qumulo audit log details](#log-field-definitions) section for more detai
 Please don't touch other files inside **config** directory.
 
 ### Json File Examples
+
+We have included three examples of configuration files that perform different types of filtering. These should help you understand how to configure rsyslog to filter and forward different log messages based upon users, protocols, protocol `operations`, etc.
+  
 1. Log forwarding to another machine without any filter
 
-If you leave the **log details** parameters empty, this indicates you do not need to define any filters or the Qumulo logs and would therefore forward the Qumulo audit logs to another machine. Example::
-```
-[
-    {
-      "hostname": "10.220.150.34",
-      "port_type": "udp",
-      "port": "514",
-      "log_details": {
-        "client_ips" : [],
-        "users" : [],
-        "protocols": [],
-        "operations": [],
-        "results": [],
-        "ids": [],
-        "file_path_1s": [],
-        "file_path_2s": []
-      }
-    }
-]
-```
-You can define a protocol type and a port number according to the configuration of your target definitions.
-
-2. Log forwarding to another machine for specified log details
-
-If you define any parameter in the **log details**, this indicates that you want to filter the Qumulo logs for the defined log definitions and forward them to another machine. Example:
-```
-[
-    {
-        "hostname": "10.220.150.33",
-        "port_type": "tcp",
-        "port": "514",
-        "log_details": {
-          "client_ips" : [],
-          "users" : ["admin"],
-          "protocols": ["api"],
-          "operations": ["nfs_delete_export"],
-          "results": [],
-          "ids": [],
-          "file_path_1s": [],
-          "file_path_2s": []
-        } 
-    }
-]
-```
-You can define a protocol type and a port number according to the configuration of your target definitions.
-
-3. Log forwarding to another machine with excluded specified log details
-
-If you define any parameters with **!** in the **log details**, this indicates that you want to exclude those log definitions from the Qumulo logs and forward them to another machine. Example:
+If you leave the **log details** parameters empty, this indicates you do not wish to define any filters on the Qumulo logs and are only going to forward the Qumulo audit logs to another machine with either TCP or UDP. In the following example, we wish to only forward the audit logs to another host with the UDP protocol.
+  
 ```
 [
    {
-        "hostname": "10.220.150.18",
-        "port_type": "tcp",
-        "port": "514",
-        "log_details": {
-          "client_ips" : [],
-          "users" : [],
-          "protocols": [],
-          "operations": ["!fs_delete", "!fs_rename", "!fs_write_data"],
-          "results": [],
-          "ids": [],
-          "file_path_1s": [],
-          "file_path_2s": []
-        } 
-     }
+      "hostname": "10.220.150.34",
+      "port_type": "udp",
+      "port": "514",
+      "log_details": 
+      {
+         "client_ips" : [],
+         "users" : [],
+         "protocols": [],
+         "operations": [],
+         "results": [],
+         "ids": [],
+         "file_path_1s": [],
+         "file_path_2s": []
+      }
+   }
 ]
 ```
-You can define a protocol type and aport number according to the configuration of your target definitions.
+
+2. Log forwarding to another machine filtering for specific protocol `operations`
+
+In this example, we are forwarding the logs to another machine using the TCP protocol. In addition, we wish to filter based upon `including` **ONLY** the `admin` user when using the `api` protocol and they are deleting the nfs export (`nfs_delete_export` protocol operation). Since this is known as an **include** filter, no other log entries are forwarded other than what is listed below.
+  
+```
+[
+   {
+      "hostname": "10.220.150.33",
+      "port_type": "tcp",
+      "port": "514",
+      "log_details": 
+      {
+         "client_ips" : [],
+         "users" : ["admin"],
+         "protocols": ["api"],
+         "operations": ["nfs_delete_export"],
+         "results": [],
+         "ids": [],
+         "file_path_1s": [],
+         "file_path_2s": []
+      } 
+   }
+]
+```
+
+3. Log forwarding to another machine with excluded specified log details
+
+In this example, we are forwarding the logs to another machine using the TCP protocol. In addition, we wish to filter based upon `excluding` certain protocol `operations`; specifically `fs_delete`, `fs_rename`, and `fs_write_data`.
+  
+An exclusion is done by putting a **!** in front of the `user`, `protocols`, or `operations` field that you wish to exclude. 
+  
+All other log messages **NOT** excluded are forwarded to the hostname and port specified in the definition below.
+  
+```
+[
+   {
+      "hostname": "10.220.150.18",
+      "port_type": "tcp",
+      "port": "514",
+      "log_details": 
+      {
+         "client_ips" : [],
+         "users" : [],
+         "protocols": [],
+         "operations": ["!fs_delete", "!fs_rename", "!fs_write_data"],
+         "results": [],
+         "ids": [],
+         "file_path_1s": [],
+         "file_path_2s": []
+      } 
+   }
+]
+```
 
 ### Create the new Qumulo audit Log configuration via LogFilter.py script
 **LogFilter.py** is the main script file that allow you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
@@ -423,6 +433,35 @@ rsyslog daemon on the server.
 
 `systemctl restart rsyslog`
 
+### Verify the rsyslog daemon
+You can verify the operation of the rsyslog daemon by running the command:
+
+`systemctl status rsyslog`
+
+The output will look something like:
+  
+```
+* rsyslog.service - System Logging Service
+   Loaded: loaded (/lib/systemd/system/rsyslog.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2022-03-22 21:06:41 UTC; 22h ago
+     Docs: man:rsyslogd(8)
+           http://www.rsyslog.com/doc/
+ Main PID: 32420 (rsyslogd)
+    Tasks: 9 (limit: 4915)
+   CGroup: /system.slice/rsyslog.service
+           `-32420 /usr/sbin/rsyslogd -n
+
+Mar 22 21:06:41 dq2-a-40g systemd[1]: Starting System Logging Service...
+Mar 22 21:06:41 dq2-a-40g systemd[1]: Started System Logging Service.
+Mar 22 21:06:41 dq2-a-40g rsyslogd[32420]: imuxsock: Acquired UNIX socket '/run/systemd/journal/syslog' (fd 3)
+Mar 22 21:06:41 dq2-a-40g rsyslogd[32420]: rsyslogd's groupid changed to 106
+Mar 22 21:06:41 dq2-a-40g rsyslogd[32420]: rsyslogd's userid changed to 102
+Mar 22 21:06:41 dq2-a-40g rsyslogd[32420]:  [origin software="rsyslogd" swVersion="8.32.0" x-pid="32420" x-inf
+Mar 23 06:25:01 dq2-a-40g rsyslogd[32420]:  [origin software="rsyslogd" swVersion="8.32.0" x-pid="32420" x-inf
+```
+
+**NOTE** the line `Active: active (running)` should be present if everything is running.
+  
 ## Help
 
 To post feedback, submit feature ideas, or report bugs, use the [Issues](https://github.com/Qumulo/LogFilter/issues) section of this GitHub repo.
