@@ -14,7 +14,8 @@ Configuring Rsyslog to filter and forward Qumulo audit logs to the different tar
    * [Why would I use UDP for rsyslog data?](#why-would-i-use-udp-for-rsyslog-data)
    * [Getting Started](#getting-started)
    * [Configuration with rsyslog](#configuration-with-rsyslog)
-   * [Define Parameters and Run LogFilter.py Script](#define-parameters-and-run-logfilter.py-script)
+   * [Define Parameters and Run LogFilter.py Script](#define-parameters-and-run-logfilterpy-script)
+   * [JSON File Examples](#json-file-examples)
    * [Help](#help)
    * [Copyright](#copyright)
    * [License](#license)
@@ -320,6 +321,78 @@ Please [Qumulo audit log details](#log-field-definitions) section for more detai
 
 Please don't touch other files inside **config** directory.
 
+### Json File Examples
+1. Log forwarding to another machine without any filter
+
+If you leave **log details** parameters empty, this means you don't need to define any filtering for Qumulo logs. You only want to forward the Qumulo audit logs to another machine. Example:
+```
+[
+    {
+      "hostname": "10.220.150.34",
+      "port_type": "udp",
+      "port": "514",
+      "log_details": {
+        "client_ips" : [],
+        "users" : [],
+        "protocols": [],
+        "operations": [],
+        "results": [],
+        "ids": [],
+        "file_path_1s": [],
+        "file_path_2s": []
+      }
+    }
+]
+```
+You can define protocol type and port number according to your configuration the target definitions.
+
+2. Log forwarding to another machine for specified log details
+
+If you define any parameters in **log details**, this means you want to filter for Qumulo logs only for the defined log definitions and forward them to another machine. Example:
+```
+[
+    {
+        "hostname": "10.220.150.33",
+        "port_type": "tcp",
+        "port": "514",
+        "log_details": {
+          "client_ips" : [],
+          "users" : ["admin"],
+          "protocols": ["api"],
+          "operations": ["nfs_delete_export"],
+          "results": [],
+          "ids": [],
+          "file_path_1s": [],
+          "file_path_2s": []
+        } 
+    }
+]
+```
+You can define protocol type and port number according to your configuration the target definitions.
+3. Log forwarding to another machine with excluded specified log details
+
+If you define any parameters with **!** in **log details**, this means you want to exclude these log definitions for Qumulo logs and forward them to another machine. Example:
+```
+[
+   {
+        "hostname": "10.220.150.18",
+        "port_type": "tcp",
+        "port": "514",
+        "log_details": {
+          "client_ips" : [],
+          "users" : [],
+          "protocols": [],
+          "operations": ["!fs_delete", "!fs_rename", "!fs_write_data"],
+          "results": [],
+          "ids": [],
+          "file_path_1s": [],
+          "file_path_2s": []
+        } 
+     }
+]
+```
+You can define protocol type and port number according to your configuration the target definitions.
+
 ### Create the new Qumulo audit Log configuration via LogFilter.py script
 **LogFilter.py** is the main script file that allow you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
 
@@ -393,5 +466,4 @@ All other trademarks referenced herein are the property of their respective owne
 
  - [Berat Ulualan](https://github.com/beratulualan)
  - [Michael Kade](https://github.com/mikekade)
-
 
