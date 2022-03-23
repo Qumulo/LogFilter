@@ -324,7 +324,7 @@ Please don't touch other files inside **config** directory.
 ### Json File Examples
 1. Log forwarding to another machine without any filter
 
-If you leave **log details** parameters empty, this means you don't need to define any filtering for Qumulo logs. You only want to forward the Qumulo audit logs to another machine. Example:
+If you leave the **log details** parameters empty, this indicates you do not need to define any filters or the Qumulo logs and would therefore forward the Qumulo audit logs to another machine. Example::
 ```
 [
     {
@@ -344,11 +344,11 @@ If you leave **log details** parameters empty, this means you don't need to defi
     }
 ]
 ```
-You can define protocol type and port number according to your configuration the target definitions.
+You can define a protocol type and a port number according to the configuration of your target definitions.
 
 2. Log forwarding to another machine for specified log details
 
-If you define any parameters in **log details**, this means you want to filter for Qumulo logs only for the defined log definitions and forward them to another machine. Example:
+If you define any parameter in the **log details**, this indicates that you want to filter the Qumulo logs for the defined log definitions and forward them to another machine. Example:
 ```
 [
     {
@@ -368,10 +368,11 @@ If you define any parameters in **log details**, this means you want to filter f
     }
 ]
 ```
-You can define protocol type and port number according to your configuration the target definitions.
+You can define a protocol type and a port number according to the configuration of your target definitions.
+
 3. Log forwarding to another machine with excluded specified log details
 
-If you define any parameters with **!** in **log details**, this means you want to exclude these log definitions for Qumulo logs and forward them to another machine. Example:
+If you define any parameters with **!** in the **log details**, this indicates that you want to exclude those log definitions from the Qumulo logs and forward them to another machine. Example:
 ```
 [
    {
@@ -391,7 +392,7 @@ If you define any parameters with **!** in **log details**, this means you want 
      }
 ]
 ```
-You can define protocol type and port number according to your configuration the target definitions.
+You can define a protocol type and aport number according to the configuration of your target definitions.
 
 ### Create the new Qumulo audit Log configuration via LogFilter.py script
 **LogFilter.py** is the main script file that allow you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
