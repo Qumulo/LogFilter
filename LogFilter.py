@@ -113,9 +113,9 @@ class LogFilter(object):
                                 self.conf_file.write("$!"+self.prm+" contains \"" + self.param +"\" or ")
                             self.conf_file.write("$!"+self.prm+" contains \"" + self.parameters[-1] +"\" ")
                         if self.defined_prm_count > 0:
-                            self.conf_file.write(")\n\t\tand \n")
+                            self.conf_file.write(" template=\"QumuloAuditFormat\")\n\t\tand \n")
                         else:
-                            self.conf_file.write(")")
+                            self.conf_file.write(" template=\"QumuloAuditFormat\")")
                         
                         self.ending="}"
                 
