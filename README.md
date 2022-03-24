@@ -248,12 +248,14 @@ You will need to modify the **log_filter.json** file under **config** and then r
 
 ## Configuration with Rsyslog
 
-For the following example, our client will be running Ubuntu 20.04. If you are using a different version
+For the following example, our client will be running Ubuntu 18.04. If you are using a different version
 of Linux, you may need to Google how to configure rsyslog for specifics.
 
 ### Global rsyslog configuration
 
 Start by updating the global rsyslog configuration to allow receiving syslog messages over TCP connections.
+This is required because the Qumulo Cluster will always use the TCP protocol in order to guarantee delivery.
+
 In the **/etc/rsyslog.conf** file, uncomment the following lines to listen for TCP connections on port 514.
 If you choose to use a different port, then also change the port referenced to match your desired
 configuration.
@@ -319,9 +321,9 @@ There are two main sections in the configuration file `log_filter.json`.
 
 Please [Qumulo audit log details](#log-field-definitions) section for more details about the log structure.
 
-Please don't touch other files inside **config** directory.
+Please don't touch other files inside the **config** directory.
 
-### Json File Examples
+### JSON File Examples
 
 We have included three examples of configuration files that perform different types of filtering. These should help you understand how to configure rsyslog to filter and forward different log messages based upon users, protocols, protocol `operations`, etc.
   
