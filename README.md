@@ -1,21 +1,24 @@
-
 # Log Filtering and Forward for Qumulo Audit Logs
-Configuring Rsyslog to filter and forward Qumulo audit logs to the different target systems
+
+## Introduction
+
+This script generates a rsyslog configuration file for filtering and forwarding Qumulo audit logs to the other systems.
 
 <img src="./docs/logfilter.png" style="width: 800px;">
 
+
 ## Table of Contents
 
-   * [Requirements](#requirements)
    * [Introduction](#introduction)
-   * [Additional Documentations](#additional-documentations)
-   * [Qumulo Log Field Definitions](#qumulo-log-field-definitions)
+   * [Requirements](#requirements)
    * [Why Filter and Forward?](#why-filter-and-forward)
    * [Why would I use UDP for rsyslog data?](#why-would-i-use-udp-for-rsyslog-data)
+   * [Qumulo Log Field Definitions](#qumulo-log-field-definitions)
    * [Getting Started](#getting-started)
    * [Configuration with rsyslog](#configuration-with-rsyslog)
    * [Define Parameters and Run LogFilter Script](#define-parameters-and-run-logfilter-script)
    * [JSON File Examples](#json-file-examples)
+   * [Additional Documentation](#additional-documentation)
    * [Help](#help)
    * [Copyright](#copyright)
    * [License](#license)
@@ -24,28 +27,33 @@ Configuring Rsyslog to filter and forward Qumulo audit logs to the different tar
 
 ## Requirements
 -   python 3.6+
+-   Zlib-dev package for JsonSchema Python library
 -   A Linux machine with Rsyslog
 
-## Introduction
+## Why Filter and Forward?
 
-This script generates a rsyslog configuration file for filtering and forwarding Qumulo audit logs to the other systems.
+There are several reasons why you may wish to filter and forward your Qumulo audit logs.
 
-Here is a <a href="./docs/sample.conf">configuration file sample</a>.
+1. You wish to aggregate all of your logs onto one machine. This is known as log aggregation.
+2. There is a requirement to filter specific logs for better understanding.
+3. Qumulo only uses TCP as the delivery mechanism for rsyslog, but your application requires UDP.
 
-## Additional Documentations
+## Why would I use UDP for rsyslog data?
 
-For help better understanding of Qumulo audit logs and rsyslog configuration details see the table of documents below.
+The rsyslogd daemon was originally configured to use UDP for log forwarding to reduce overhead. While UDP
+is an unreliable protocol, it's streaming method does not require the overhead of establishing a network
+session. This protocol also reduces network load as the network stream requires no receipt verification
+or window adjustment.
 
-|Documentation|Description|
-|-------------|-----------|
-|[Qumulo Audit Logging](https://care.qumulo.com/hc/en-us/articles/360021454193-Qumulo-Core-Audit-Logging) | Qumulo Audit Logging Care Article|
-|[Configure Audit Logging](https://care.qumulo.com/hc/en-us/articles/360021454193-Qumulo-Core-Audit-Logging#details-0-2) | How to enable audit logging on Qumulo|
-|[What is Rsyslog?](https://www.rsyslog.com/) | Rsyslog details and official website|
-|[Templates](https://www.rsyslog.com/doc/v8-stable/configuration/templates.html) | Rsyslog templates are a key feature that allow to specify any format a user might want. |
-|[Properties](https://www.rsyslog.com/doc/v8-stable/configuration/properties.html) | Properties are data items in rsyslog.|
-|[Control Structures](https://www.rsyslog.com/doc/v8-stable/rainerscript/control_structures.html) | Rsyslog control structures in RainerScript are similar in semantics to a lot of other mainstream languages.|
-|[Setting Variables](https://www.rsyslog.com/how-to-use-set-variable-and-exec_template/) | Setting a variable allows you to use either a static value or from a given property.|
-|[Filters](https://www.rsyslog.com/doc/v8-stable/configuration/filters.html) | Expression based filters allow filtering on arbitrary complex expressions, which can include boolean, arithmetic and string operations.|
+You may find that UDP is preferred if:
+
+1. The receiving device does not support TCP delivery
+2. The receiving device, or hosting network, are severely resource limited
+3. The logs being delivered are considered low priority
+
+When choosing UDP log delivery, it is important to keep in mind that there is no message delivery
+verification or **recovery**. So, while the likelihood of data loss may not be high, logs can be
+missed due to network packet loss.
 
 ## Qumulo Log Field Definitions
 The fields are described below in the order that they display within the Qumulo audit log message body:
@@ -197,31 +205,6 @@ which is the same path prefix used to access snapshot files via nfs and smb.
 **IMPORTANT!!** In order to keep the amount of audit log message to a minimum, similar operations performed
 in rapid succession will be de-duplicated. For example, if a user reads the same file 100,000 times in a
 minute, only one message corresponding to the first read will be generated.
-
-## Why Filter and Forward?
-
-There are several reasons why you may wish to filter and forward your Qumulo audit logs.
-
-1. You wish to aggregate all of your logs onto one machine. This is known as log aggregation.
-2. There is a requirement to filter specific logs for better understanding.
-3. Qumulo only uses TCP as the delivery mechanism for rsyslog, but your application requires UDP.
-
-## Why would I use UDP for rsyslog data?
-
-The rsyslogd daemon was originally configured to use UDP for log forwarding to reduce overhead. While UDP
-is an unreliable protocol, it's streaming method does not require the overhead of establishing a network
-session. This protocol also reduces network load as the network stream requires no receipt verification
-or window adjustment.
-
-You may find that UDP is preferred if:
-
-1. The receiving device does not support TCP delivery
-2. The receiving device, or hosting network, are severely resource limited
-3. The logs being delivered are considered low priority
-
-When choosing UDP log delivery, it is important to keep in mind that there is no message delivery
-verification or **recovery**. So, while the likelihood of data loss may not be high, logs can be
-missed due to network packet loss.
 
 ## Getting Started
 
@@ -405,7 +388,7 @@ All other log messages **NOT** excluded are forwarded to the hostname and port s
    }
 ]
 ```
-
+  
 ### Create the new Qumulo audit Log configuration via LogFilter script
 **LogFilter** is the main script file that allow you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
 
@@ -463,6 +446,22 @@ Mar 23 06:25:01 dq2-a-40g rsyslogd[32420]:  [origin software="rsyslogd" swVersio
 ```
 
 **NOTE** the line `Active: active (running)` should be present if everything is running.
+
+## Additional Documentation
+
+For help better understanding of Qumulo audit logs and rsyslog configuration details see the table of documents below.
+
+|Documentation|Description|
+|-------------|-----------|
+|[Qumulo Audit Logging](https://care.qumulo.com/hc/en-us/articles/360021454193-Qumulo-Core-Audit-Logging) | Qumulo Audit Logging Care Article|
+|[Configure Audit Logging](https://care.qumulo.com/hc/en-us/articles/360021454193-Qumulo-Core-Audit-Logging#details-0-2) | How to enable audit logging on Qumulo|
+|[What is Rsyslog?](https://www.rsyslog.com/) | Rsyslog details and official website|
+|[Templates](https://www.rsyslog.com/doc/v8-stable/configuration/templates.html) | Rsyslog templates are a key feature that allow to specify any format a user might want. |
+|[Properties](https://www.rsyslog.com/doc/v8-stable/configuration/properties.html) | Properties are data items in rsyslog.|
+|[Control Structures](https://www.rsyslog.com/doc/v8-stable/rainerscript/control_structures.html) | Rsyslog control structures in RainerScript are similar in semantics to a lot of other mainstream languages.|
+|[Setting Variables](https://www.rsyslog.com/how-to-use-set-variable-and-exec_template/) | Setting a variable allows you to use either a static value or from a given property.|
+|[Filters](https://www.rsyslog.com/doc/v8-stable/configuration/filters.html) | Expression based filters allow filtering on arbitrary complex expressions, which can include boolean, arithmetic and string operations.|
+
   
 ## Help
 
