@@ -26,8 +26,6 @@ This script generates a rsyslog configuration file for filtering and forwarding 
    * [Contributors](#contributors)
 
 ## Requirements
--   python 3.6+
--   Zlib-dev package for JsonSchema Python library
 -   A Linux machine with Rsyslog
 
 ## Why Filter and Forward?
