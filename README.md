@@ -231,8 +231,7 @@ You will need to modify the **log_filter.json** file under **config** and then r
 
 ## Configuration with Rsyslog
 
-For the following example, our client will be running Ubuntu 18.04. If you are using a different version
-of Linux, you may need to Google how to configure rsyslog for specifics.
+For the following example, our client will be running Ubuntu 18.04. If you are using a different version of Linux, you may need to search how to configure rsyslog for specifics.
 
 ### Global rsyslog configuration
 
@@ -389,32 +388,31 @@ All other log messages **NOT** excluded are forwarded to the hostname and port s
 ]
 ```
   
-### Create the new Qumulo audit Log configuration via LogFilter script
-**LogFilter** is the main script file that allow you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
+### Create the new Qumulo audit log configuration via the LogFilter script
+**LogFilter** is the main script file that allows you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
 
 Run the script in this directory by typing 
 
 `./LogFilter --config ./config/log_filters.json` 
 
-in a terminal window. If there are no errors, a rsyslog configuration file will be created in **outputs** directory.
+in a terminal window. If there are no errors, a rsyslog configuration file will be created in the **outputs** directory.
 
 ### Verify the configuration file
 
-Before copying the configuration file that you created via **LogFilter**, you can verify the config file doesn't have any syntax error with the command below.
+Before copying the configuration file that you created via **LogFilter**, you can verify the config file doesn't have any syntax errors with the command below.
 
 `rsyslogd -f ./outputs/10-qumulo-audit.conf -N7`
 
 ### Copy the new configuration file 
 Rsyslog loads dedicated log file format definitions from the **/etc/rsyslog.d** directory. You will need
-to create a new configuration file (**10-qumulo-audit.conf** inside **outputs**) via **LogFilter**  script for defining the Qumulo Audit Log format.
+to create a new configuration file (**10-qumulo-audit.conf** inside **outputs**) via the **LogFilter**  script for defining the Qumulo Audit Log format.
 
 Simply copy this file into **/etc/rsyslog.d**. 
 
 `cp ./outputs/10-qumulo-audit.conf /etc/rsyslog.d/` 
 
 ### Restart the rsyslog daemon
-In order for the new Qumulo Audit Log configuration to be active, you must first restart the
-rsyslog daemon on the server.
+In order for the new Qumulo Audit Log configuration to be active, you must restart the rsyslog daemon on the server.
 
 `systemctl restart rsyslog`
 
