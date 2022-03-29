@@ -39,17 +39,14 @@ LogFilter.py --config path
 
 # Import python libraries
 
-import json
 import shutil
 import sys
 import argparse
-import os
-
 
 # Import non-os libraries
 
-from utils.Logger import Logger, Level
-from utils.ConfigFile import ConfigFile
+from Logger import Logger, Level
+from ConfigFile import ConfigFile
 
 
 class LogFilter(object):
@@ -57,7 +54,29 @@ class LogFilter(object):
         self.args = args
         self.config = config
         self.logger = logger
-        
+
+        # Define variables used in class. These need to be done here so that we don't violate
+        # pep8 coding standards
+
+        self.conf_file = None
+        self.filter = None
+        self.filters = None
+        self.hostname = None
+        self.port_type = None
+        self.port = None
+        self.log_details = None
+        self.client_ips = None
+        self.users = None
+        self.protocols = None
+        self.operations = None
+        self.results = None
+        self.ids = None
+        self.file_path_1s = None
+        self.file_path_2s = None
+        self.indent_amt = 0
+        self.brace_amt = 0
+        self.paren_amt = 0
+
     def SetUp(self):
         
         # Get configuration info from the file
@@ -80,17 +99,18 @@ class LogFilter(object):
             self.file_path_1s = self.log_details['file_path_1s']
             self.file_path_2s = self.log_details['file_path_2s']
             
-            self.ending=""
-            
-            self.conf_file.write("\n\n#Log filtering rules that log_filter.py script generated\n")
-            self.conf_file.write("if ($app-name startswith \"qumulo\") then {\n")
+            self.write_output("\n\n#Log filtering rules that log_filter.py script generated")
+            self.write_output("if ($app-name startswith \"qumulo\") then")
+            self.open_brace()
             
             self.definition_counter = 0
             for self.definitions in self.log_details.values():
                 if self.definitions:
                     self.definition_counter +=1
             if self.definition_counter > 0:
-                self.conf_file.write("\tif ( \n")
+                self.write_output("if")
+                self.open_paren()
+
                 self.parameters_list = list(self.log_details.keys())
                 for self.prm in self.parameters_list:
                     self.defined_prm_count = 0
@@ -101,86 +121,125 @@ class LogFilter(object):
                     
                     self.parameters = self.log_details[self.prm]
                     if len(self.parameters) > 0:
-                        self.conf_file.write("\t\t")
                         if any(self.item.startswith('!') for self.item in self.parameters):
-                            self.conf_file.write("not (")
+                            self.write_output("not")
+                            self.open_paren()
+
                             for self.param in self.parameters[:-1]:
-                                self.conf_file.write("$!"+self.prm+" contains \"" + self.param.split("!",2)[1] +"\" or ")
-                            self.conf_file.write("$!"+self.prm+" contains \"" + self.parameters[-1].split("!",2)[1] +"\" ")
+                                self.write_output("$!"+self.prm+" contains \"" + self.param.split("!",2)[1] +"\" or ")
+                            self.write_output("$!"+self.prm+" contains \"" + self.parameters[-1].split("!",2)[1] +"\" ")
                         else:
-                            self.conf_file.write("(")
+                            self.open_paren()
                             for self.param in self.parameters[:-1]:
-                                self.conf_file.write("$!"+self.prm+" contains \"" + self.param +"\" or ")
-                            self.conf_file.write("$!"+self.prm+" contains \"" + self.parameters[-1] +"\" ")
+                                self.write_output("$!"+self.prm+" contains \"" + self.param +"\" or ")
+                            self.write_output("$!"+self.prm+" contains \"" + self.parameters[-1] +"\" ")
                         if self.defined_prm_count > 0:
-                            self.conf_file.write(")\n\t\tand \n")
+                            self.close_paren()
+                            self.write_output("and")
                         else:
-                            self.conf_file.write(")")
-                        
-                        self.ending="}"
-                
-                self.conf_file.write("\n\t) then {\n") 
+                            self.close_paren()
+
+                self.close_paren()
+                self.write_output("then")
+                self.open_brace()
             
-            self.conf_file.write("\t\taction(type=\"omfwd\" target=\""+self.hostname+"\" port=\""+self.port+"\" protocol=\""+self.port_type+"\" template=\"QumuloAuditFormat\")\n\t}\n")
-            self.conf_file.write("\telse\n")
-            self.conf_file.write("\t\taction(type=\"omfile\" file=\"/dev/null\" template=\"QumuloAuditFormat\")\n")
-            self.conf_file.write(self.ending+"\n\n")
+            self.write_output("action(type=\"omfwd\" target=\""+self.hostname+"\" port=\""+self.port+"\" protocol=\""+self.port_type+"\" template=\"QumuloAuditFormat\")")
+            self.close_brace()
+            self.write_output("else")
+            self.open_brace()
+            self.write_output("action(type=\"omfile\" file=\"/dev/null\" template=\"QumuloAuditFormat\")")
+            self.write_finish()
         
-    
+    # Teardown everything once this class is done... There might not be anything to do here
+
     def TearDown(self):
         return
-    
-    def _configuration_info(self, config, logger=None):
 
-        # Open configuration file and get arguments
-        # A sample log_filters.json file:
+    # Routine to write the output file... This is only necessary because we have to count the number of indents
+    # to make sure the formatting looks really good
+
+    def write_output(self, out_line):
+
+        # Write out the number of spaces based upon our indent level
+
+        for indx in range(self.indent_amt):
+            self.conf_file.write("    ")
+
+         # Write the data
+
+        self.conf_file.write(f'{out_line}\n')
+
+    # Write out the open brace and set the indent level
+
+    def open_brace(self):
+
+        self.write_output('{')
+        self.indent_amt = self.indent_amt + 1
+        self.brace_amt = self.brace_amt + 1
+
+    # Write out the open parentheses and set the indent level
+
+    def open_paren(self):
+
+        self.write_output('(')
+        self.indent_amt = self.indent_amt + 1
+        self.paren_amt = self.paren_amt + 1
+
+    # Write out the close brace and set the indent level
+
+    def close_brace(self):
+
+        if self.indent_amt > 0:
+            self.indent_amt = self.indent_amt - 1
+
+        if self.brace_amt > 0:
+            self.write_output('}')
+            self.brace_amt = self.brace_amt - 1
+
+    # Write out the close parentheses and set the indent level
+
+    def close_paren(self):
+
+        if self.indent_amt > 0:
+            self.indent_amt = self.indent_amt - 1
+
+        if self.paren_amt > 0:
+            self.write_output(')')
+            self.paren_amt = self.paren_amt - 1
+
+    # If we are done writing the definition, determine if we need one more brace to close it out
+
+    def write_finish(self):
+
+        paren_amt = self.paren_amt
+        for indx in range(paren_amt):
+            self.close_paren()
+
+        brace_amt = self.brace_amt
+        for indx in range(brace_amt):
+            self.close_brace()
+
+    # Copy template file into our output file and then open the output file for appending
+
+    def _configuration_info(self, config, logger=None):
 
         """
         [
             {
-            "hostname": "10.220.150.34",
-            "port_type": "udp",
-            "port": "514",
-            "log_details": {
-                "client_ips" : [],
-                "users" : [],
-                "protocols": [],
-                "operations": [],
-                "results": [],
-                "ids": [],
-                "file_path_1s": [],
-                "file_path_2s": []
-            }
-            },
-            {
-                "hostname": "10.220.150.18",
-                "port_type": "tcp",
+                "hostname": "10.220.150.34",
+                "port_type": "udp",
                 "port": "514",
-                "log_details": {
-                "client_ips" : [],
-                "users" : [],
-                "protocols": [],
-                "operations": ["!fs_delete", "!fs_rename", "!fs_write_data"],
-                "results": [],
-                "ids": [],
-                "file_path_1s": [],
-                "file_path_2s": []
-                } 
-            },
-            {
-                "hostname": "10.220.150.33",
-                "port_type": "tcp",
-                "port": "514",
-                "log_details": {
-                "client_ips" : [],
-                "users" : ["admin"],
-                "protocols": ["api"],
-                "operations": ["nfs_delete_export"],
-                "results": [],
-                "ids": [],
-                "file_path_1s": [],
-                "file_path_2s": []
-                } 
+                "log_details":
+                {
+                    "client_ips" : [],
+                    "users" : [],
+                    "protocols": [],
+                    "operations": [],
+                    "results": [],
+                    "ids": [],
+                    "file_path_1s": [],
+                    "file_path_2s": []
+                }
             }
         ]
         """
@@ -190,12 +249,11 @@ class LogFilter(object):
         # required data. It would have failed in the validation routine if
         # it didn't exist
 
-        self.log_filter_file = "config/log_filters.json"
-        self.template_file = "config/qumulo-audit.conf.template"
-        self.config_file = "outputs/10-qumulo-audit.conf"
+        base_dir = config.dir_name()
 
-        with open(self.log_filter_file, 'r') as filter_file:
-            self.filters = json.load(filter_file)
+        self.template_file = f'{base_dir}/qumulo-audit.conf.template'
+        self.config_file = "outputs/10-qumulo-audit.conf"
+        self.filters = config.json_data()
 
         # Prepare config file from the template
         shutil.copy(self.template_file, self.config_file)
