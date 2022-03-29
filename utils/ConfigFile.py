@@ -34,7 +34,7 @@ import argparse
 import json
 import jsonschema
 from jsonschema import validate
-from utils.Logger import Logger, Level
+from Logger import Logger, Level
 
 #
 # ConfigFile Class
@@ -47,6 +47,7 @@ class ConfigFile(object):
     def __init__(self, config_path, logger=None):
 
         self.config_path = config_path
+        self.dir_path = os.path.dirname(self.config_path)
 
         # Store the logger... We might use it later.
 
@@ -90,6 +91,16 @@ class ConfigFile(object):
                 self.logger.error(f'{self.config_path} did not valid')
                 self.logger.error(f'Error was: {msg}')
                 raise jsonschema.exceptions.ValidationError(msg)
+
+    # dir_name = Get the dirname of the config file component
+
+    def dir_name(self):
+        return self.dir_path
+
+    # json_data - Get entire json structure
+
+    def json_data(self):
+        return self.config
 
     # get - Return a specific value based upon key
 
