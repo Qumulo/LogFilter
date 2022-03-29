@@ -1,47 +1,50 @@
 [
     {
-      "hostname": "10.220.150.34",
-      "port_type": "udp",
-      "port": "514",
-      "log_details": {
-        "client_ips" : [],
-        "users" : [],
-        "protocols": [],
-        "operations": [],
-        "results": [],
-        "ids": [],
-        "file_path_1s": [],
-        "file_path_2s": []
-      }
+        "hostname": "10.220.150.34",
+        "port_type": "udp",
+        "port": "514",
+        "log_details":
+	{
+            "client_ips" : [],
+            "users" : [],
+            "protocols": [],
+            "operations": [],
+            "results": [],
+            "ids": [],
+            "file_path_1s": [],
+            "file_path_2s": []
+        }
     },
     {
         "hostname": "10.220.150.18",
         "port_type": "tcp",
         "port": "514",
-        "log_details": {
-          "client_ips" : [],
-          "users" : [],
-          "protocols": [],
-          "operations": ["!fs_delete", "!fs_rename", "!fs_write_data"],
-          "results": [],
-          "ids": [],
-          "file_path_1s": [],
-          "file_path_2s": []
+        "log_details":
+	{
+            "client_ips" : [],
+            "users" : [],
+            "protocols": [],
+            "operations": ["!fs_delete", "!fs_rename", "!fs_write_data"],
+            "results": [],
+            "ids": [],
+            "file_path_1s": [],
+            "file_path_2s": []
         } 
-      },
-      {
+    },
+    {
         "hostname": "10.220.150.33",
         "port_type": "tcp",
         "port": "514",
-        "log_details": {
-          "client_ips" : [],
-          "users" : ["admin"],
-          "protocols": ["api"],
-          "operations": ["nfs_delete_export"],
-          "results": [],
-          "ids": [],
-          "file_path_1s": [],
-          "file_path_2s": []
+        "log_details":
+	{
+            "client_ips" : [],
+            "users" : ["admin"],
+            "protocols": ["api"],
+            "operations": ["nfs_delete_export"],
+            "results": [],
+            "ids": [],
+            "file_path_1s": [],
+            "file_path_2s": []
         } 
-      }
-  ]
+    }
+]
