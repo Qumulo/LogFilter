@@ -3,6 +3,7 @@
         "hostname": "10.220.150.34",
         "port_type": "udp",
         "port": "514",
+	"store": true,
         "log_details":
 	{
             "client_ips" : [],
@@ -19,6 +20,7 @@
         "hostname": "10.220.150.18",
         "port_type": "tcp",
         "port": "514",
+	"store": false,
         "log_details":
 	{
             "client_ips" : [],
