@@ -1,0 +1,65 @@
+[
+    {
+        "hostname": "192.168.102.10",
+        "port_type": "udp",
+        "port": "514",
+	"store":
+	{
+	    "name": "AuditLog1",
+	    "directory": "/var/log/qumulo/auditlog1"
+	},
+        "log_details":
+	{
+            "client_ips" : [],
+            "users" : [],
+            "protocols": ["nfs3"],
+            "operations": [],
+            "results": [],
+            "ids": [],
+            "file_path_1s": [],
+            "file_path_2s": []
+        }
+    },
+    {
+        "hostname": "192.168.102.11",
+        "port_type": "tcp",
+        "port": "514",
+	"store":
+	{
+	    "name": "AuditLog2",
+	    "directory": "/var/log/qumulo/auditlog2"
+	},
+        "log_details":
+	{
+            "client_ips" : [],
+            "users" : [],
+            "protocols": [],
+            "operations": ["!fs_delete"],
+            "results": [],
+            "ids": [],
+            "file_path_1s": [],
+            "file_path_2s": []
+        }
+    },
+    {
+        "hostname": "192.168.102.12",
+        "port_type": "tcp",
+        "port": "514",
+	"store":
+	{
+	    "name": "AuditLog3",
+	    "directory": "/var/log/qumulo/auditlog3"
+	},
+        "log_details":
+	{
+            "client_ips" : [],
+            "users" : [],
+            "protocols": [],
+            "operations": ["fs_delete", "fs_write", "fs_read"],
+            "results": [],
+            "ids": [],
+            "file_path_1s": [],
+            "file_path_2s": []
+        } 
+    }
+]

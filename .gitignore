@@ -6,9 +6,6 @@
 # Don't track emacs files
 *~
 
-# Don't track updated log_filters.json files... We use them for testing
-config/log_filters.json
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
