@@ -168,7 +168,7 @@ class LogFilter(object):
             # Do they also want to write it to a file?
 
             if self.store is not None:
-                self.write_output(f'action(type="omfile" dynaFile="{self.store["name"]} template="QumuloAuditFormat")')
+                self.write_output(f'action(type="omfile" dynaFile="{self.store["name"]}" template="QumuloAuditFormat")')
                 
             self.close_brace()
             self.write_output("else")
@@ -274,9 +274,9 @@ class LogFilter(object):
         # definition as it is required
 
         if len(store_name) == 0:
-            self.write_output('\ntemplate(name="QumuloFileName" type="list"')
+            self.write_output('\ntemplate(name="QumuloFileName" type="list")')
             self.open_brace()
-            self.write_output('constant(value="/var/log/qumulo")')
+            self.write_output('constant(value="/var/log/qumulo/")')
             self.write_output('property(name="hostname")')
             self.write_output('constant(value=".log")')
             self.close_brace()
@@ -291,9 +291,9 @@ class LogFilter(object):
         # directory
 
         for indx in range(len(store_name)):
-            self.write_output(f'\ntemplate(name="{store_name[indx]}" type="list"')
+            self.write_output(f'\ntemplate(name="{store_name[indx]}" type="list")')
             self.open_brace()
-            self.write_output(f'constant(value="{store_dir[indx]}")')
+            self.write_output(f'constant(value="{store_dir[indx]}/")')
             self.write_output('property(name="hostname")')
             self.write_output('constant(value=".log")')
             self.close_brace()
