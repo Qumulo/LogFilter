@@ -61,8 +61,30 @@
 	    {
 	        "$id": "#root/items/store", 
 		"title": "Store", 
-		"type": "boolean",
-		"default": false
+		"type": "object",
+		"required":
+		[
+		    "name",
+		    "directory"
+		],
+		"properties":
+		{
+		    "name":
+		    {
+		        "$id": "#root/items/store/name", 
+			"title": "Name", 
+			"type": "string",
+			"default": "",
+			"pattern": "^.*$"
+		    },
+		    "directory":
+		    {
+		        "$id": "#root/items/store/directory", 
+			"title": "Directory", 
+			"type": "string",
+			"format": "uri"
+		    }
+		}
             },
 	    "log_details":
 	    {

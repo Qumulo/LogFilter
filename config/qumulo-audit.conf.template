@@ -2,16 +2,10 @@
 # |P|L|E|A|S|E| |D|O| |N|O|T| |T|O|U|C|H| |T|H|I|S| |F|I|L|E|S| |M|A|N|U|A|L|L|Y|!|!|!| 
 # +-+-+-+-+-+-+ +-+-+ +-+-+-+ +-+-+-+-+-+ +-+-+-+-+ +-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+
 
-# Log file name:"/var/log/<node-hostname>.log"
-template(name="QumuloFileName" type="list") {
-  constant(value="/var/log/")
-  property(name="hostname")
-  constant(value=".log")
-}
-
 # Log message format: "timestamp,audit-msg-csv-fields..."
 
-template(name="QumuloAuditFormat" type="list"){ 
+template(name="QumuloAuditFormat" type="list")
+{
   property(name="timestamp" dateFormat="rfc3339")
   constant(value=",")
   property(name="hostname")
@@ -21,6 +15,7 @@ template(name="QumuloAuditFormat" type="list"){
 }
 
 # 2022-03-11T00:14:48.707799Z,10.100.246.152,"admin",api,nfs_delete_export,ok,9,"/PSS",""
+
 set $!client_ips = field($msg, 44 ,1);
 set $!users = field($msg, 44 ,2);
 set $!protocols = field($msg, 44 ,3);
@@ -29,3 +24,5 @@ set $!results = field($msg, 44 ,5);
 set $!ids = field($msg, 44 ,6);
 set $!file_path_1s = field($msg, 44 ,7);
 set $!file_path_2s = field($msg, 44 ,8);
+
+# Log file directory specifications

@@ -3,7 +3,11 @@
         "hostname": "10.220.150.34",
         "port_type": "udp",
         "port": "514",
-	"store": true,
+	"store":
+	{
+	    "name": "AuditLog1",
+	    "directory": "/var/log/qumulo/auditlog1"
+	},
         "log_details":
 	{
             "client_ips" : [],
@@ -20,7 +24,11 @@
         "hostname": "10.220.150.18",
         "port_type": "tcp",
         "port": "514",
-	"store": false,
+	"store":
+	{
+	    "name": "AuditLog2",
+	    "directory": "/var/log/qumulo/auditlog2"
+	},
         "log_details":
 	{
             "client_ips" : [],
@@ -37,6 +45,11 @@
         "hostname": "10.220.150.33",
         "port_type": "tcp",
         "port": "514",
+	"store":
+	{
+	    "name": "AuditLog3",
+	    "directory": "/var/log/qumulo/auditlog3"
+	},
         "log_details":
 	{
             "client_ips" : [],
