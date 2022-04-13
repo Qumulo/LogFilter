@@ -344,8 +344,8 @@ The **qumulo** configuration file for logrotate looks like:
 
 The parameters are:
 
-**/var/log/qumulo/*.log** - The directory and files that will be worked on. Since we configured rsyslog
-to store the Qumulo Audit Logs in **/var/log/qumulo**, this is the directory that logrotate should examine.
+**/var/log/qumulo/*.log** - The directory and files that will be worked on. If you are storing the logs
+in multiple directories within **/var/log/qumulo**, then you will need to create multiple entries (see below).
 
 **daily** - How often to examine the Qumulo Audit Logs and determine if they should be rotated. Since,
 logrotate only runs once per day, you can only change this value to **weekly** or **monthly**.
@@ -368,6 +368,34 @@ the format YYYY-mm-dd. So, a log file of **groot-1.log** becomes **groot-1.log.2
 will continue to use the old log files until you inform it that they have changed,
 we have used the included linux script **/usr/lib/rsyslog/rsyslog-rotate**; which will send a TERM signal
 to rsyslog. This TERM signal will inform rsyslog to switch to a new log file.
+
+```
+/var/log/qumulo/auditdelete/*.log {
+        daily
+        missingok
+        notifempty
+        rotate 4
+        size 50M
+        dateext
+        dateformat -%Y-%m-%d
+        postrotate
+             /usr/lib/rsyslog/rsyslog-rotate
+        endscript
+}
+
+  /var/log/qumulo/auditlog1/*.log {
+        daily
+        missingok
+        notifempty
+        rotate 4
+        size 50M
+        dateext
+        dateformat -%Y-%m-%d
+        postrotate
+             /usr/lib/rsyslog/rsyslog-rotate
+        endscript
+}
+```
 
 ## Define Parameters and Run LogFilter Script
 
