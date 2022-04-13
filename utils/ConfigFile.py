@@ -33,7 +33,7 @@ import os
 import argparse
 import json
 import jsonschema
-from jsonschema import validate
+from jsonschema import validate, ValidationError
 from Logger import Logger, Level
 
 #
@@ -90,7 +90,7 @@ class ConfigFile(object):
             if self.logger is not None:
                 self.logger.error(f'{self.config_path} did not valid')
                 self.logger.error(f'Error was: {msg}')
-                raise jsonschema.exceptions.ValidationError(msg)
+                sys.exit(1)
 
     # dir_name = Get the dirname of the config file component
 

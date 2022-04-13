@@ -1,263 +1,115 @@
 {
-    "definitions": {},
+    "$id": "logfilter",
     "$schema": "http://json-schema.org/draft-07/schema#", 
     "title": "Log Filter", 
     "description": "Rsyslog configuration file generator for Qumulo audit log filtering",
     "type": "array",
+    "minItems": 1,
     "default": [],
+    "required": ["items"],
     "items":
     {
-        "$id": "#root/items", 
-	"title": "Items", 
 	"type": "object",
-	"required":
-	[
-            "hostname",
-	    "port_type",
-	    "port",
-	    "log_details"
-	],
 	"properties":
 	{
- 	    "hostname":
+	    "forward": {"$ref": "/logfilter/forward"},
+	    "store": {"$ref": "/logfilter/store"},
+	    "log_details": {"$ref": "/logfilter/log_details"}
+	},
+	"anyOf":
+	[
+	    {"required": ["forward", "store", "log_details"]},
+	    {"required": ["forward", "log_details"]},
+	    {"required": ["store", "log_details"]}
+	]
+    },
+
+    "$defs":
+    {
+	"forward":
+	{
+	    "$id": "/logfilter/forward", 
+	    "$schema": "http://json-schema.org/draft-07/schema#", 
+            "title": "Forward",
+	    "description": "Forward filtered logs to another machine",
+	    "type": "object",
+	    "properties":
 	    {
-	        "$id": "#root/items/hostname", 
-		"title": "Hostname",
-		"description": "Log server or SIEM hostname or IP address", 
-		"type": "string",
-		"default": "",
-		"examples":
-		[
-		    "10.220.150.33",
-		    "logserver.qumulo.local"
-		],
-		"pattern": "^.*$"
-            },
-	    "port_type":
+	        "hostname": {"type": "string"},
+		"port_type": {"type": "string"},
+		"port": {"type": "string"}
+	    },
+	    "required":	["hostname", "port_type", "port"]
+	},
+	"store":
+	{
+	    "$id": "/logfilter/store", 
+	    "$schema": "http://json-schema.org/draft-07/schema#", 
+            "title": "Store",
+	    "description": "Store filtered logs to a file",
+	    "type": "object",
+	    "properties":
 	    {
-	        "$id": "#root/items/port_type", 
-		"title": "Port_type", 
-		"type": "string",
-		"default": "",
-		"examples":
-		[
-		    "tcp"
-		],
-		"pattern": "^.*$"
-            },
-	    "port":
+	        "name": {"type": "string"},
+		"directory": {"type": "string"}
+	    },
+	    "required":	["name", "directory"]
+	},
+	"log_details":
+	{
+	    "$id": "/logfilter/log_details", 
+	    "$schema": "http://json-schema.org/draft-07/schema#", 
+	    "title": "Log Details", 
+	    "description": "Log Filter Details",
+	    "type": "object",
+	    "properties":
 	    {
-	        "$id": "#root/items/port", 
-		"title": "Port", 
-		"type": "string",
-		"default": "",
-		"examples":
-		[
-		    "514"
-		],
-		"pattern": "^.*$"
-            },
-	    "store":
-	    {
-	        "$id": "#root/items/store", 
-		"title": "Store", 
-		"type": "object",
-		"required":
-		[
-		    "name",
-		    "directory"
-		],
-		"properties":
+	        "client_ips":
 		{
-		    "name":
-		    {
-		        "$id": "#root/items/store/name", 
-			"title": "Name", 
-			"type": "string",
-			"default": "",
-			"pattern": "^.*$"
-		    },
-		    "directory":
-		    {
-		        "$id": "#root/items/store/directory", 
-			"title": "Directory", 
-			"type": "string",
-			"format": "uri"
-		    }
+		    "type": "array",
+		    "items": {"type": "string"}
+		},
+		"users":
+		{
+		    "type": "array",
+		    "items": {"type": "string"}
+		},
+		"protocols":
+		{
+		    "type": "array",
+		    "items": {"type": "string"}
+		},
+		"operations":
+		{
+		    "type": "array",
+		    "items": {"type": "string"}
+		},
+		"results":
+		{
+		    "type": "array",
+		    "items": {"type": "string"}
+		},
+		"ids":
+		{
+		    "type": "array",
+		    "items": {"type": "string"}
+		},
+		"file_path_1s":
+		{
+		    "type": "array",
+		    "items": {"type": "string"}
+		},
+		"file_path_2s":
+		{
+		    "type": "array",
+		    "items": {"type": "string"}
 		}
-            },
-	    "log_details":
-	    {
-	        "$id": "#root/items/log_details", 
-		"title": "Log_details", 
-		"type": "object",
-		"required":
-		[
-		    "client_ips",
-		    "users",
-		    "protocols",
-		    "operations",
-   		    "results",
-		    "ids",
-		    "file_path_1s",
-		    "file_path_2s"
-		],
-		"properties":
-		{
-		    "client_ips":
-		    {
-		        "$id": "#root/items/log_details/client_ips", 
-			"title": "Client_ips", 
-			"type": "array",
-			"default": [],
-			"items":
-			{
-			    "$id": "#root/items/log_details/client_ips/items", 
-			    "title": "Items", 
-			    "type": "string",
-			    "default": "",
-			    "examples":
-			    [
-			        "10.10.10.1"
-			    ],
-			    "pattern": "^.*$"
-			}
-		    },
-		    "users":
-		    {
-		        "$id": "#root/items/log_details/users", 
-			"title": "Users", 
-			"type": "array",
-			"default": [],
-			"items":
-			{
-			    "$id": "#root/items/log_details/users/items", 
-			    "title": "Items", 
-			    "type": "string",
-			    "default": "",
-			    "examples":
-			    [
-			        "admin"
-			    ],
-			    "pattern": "^.*$"
-			}
-		    },
-		    "protocols":
-		    {
-		        "$id": "#root/items/log_details/protocols", 
-			"title": "Protocols", 
-			"type": "array",
-			"default": [],
-			"items":
-			{
-			    "$id": "#root/items/log_details/protocols/items", 
-  			    "title": "Items", 
-			    "type": "string",
-			    "default": "",
-			    "examples":
-			    [
-			        "api"
-			    ],
-			    "pattern": "^.*$"
-			}
-		    },
-		    "operations":
-		    {
-		        "$id": "#root/items/log_details/operations", 
-			"title": "Operations", 
-			"type": "array",
-			"default": [],
-			"items":
-			{
-			    "$id": "#root/items/log_details/operations/items", 
-			    "title": "Items", 
-			    "type": "string",
-			    "default": "",
-			    "examples":
-			    [
-			        "nfs_delete_export"
-			    ],
-			    "pattern": "^.*$"
-			}
-		    },
-		    "results":
-		    {
-		        "$id": "#root/items/log_details/results", 
-			"title": "Results", 
-			"type": "array",
-			"default": [],
-			"items":
-			{
-			    "$id": "#root/items/log_details/results/items", 
-			    "title": "Items", 
-			    "type": "string",
-			    "default": "",
-			    "examples":
-			    [
-			        "ok"
-			    ],
-			    "pattern": "^.*$"
-			}
-		    },
-		    "ids":
-		    {
-		        "$id": "#root/items/log_details/ids", 
-			"title": "Ids", 
-			"type": "array",
-			"default": [],
-			"items":
-			{
- 			    "$id": "#root/items/log_details/ids/items", 
-			    "title": "Items", 
-			    "type": "string",
-			    "default": "",
-			    "examples":
-			    [
-			        "100001"
-			    ],
-			    "pattern": "^.*$"
-			}
-		    },
-		    "file_path_1s":
-		    {
-		        "$id": "#root/items/log_details/file_path_1s", 
-		    	"title": "File_path_1s", 
-		    	"type": "array",
-		    	"default": [],
-		    	"items":
-		    	{
-		            "$id": "#root/items/log_details/file_path_1s/items", 
-			    "title": "Items", 
-			    "type": "string",
-			    "default": "",
-			    "examples":
-			    [
-			        "/dir1/file1"
-			    ],
-			    "pattern": "^.*$"
-		        }
-		    },
-		    "file_path_2s":
-		    {
-		        "$id": "#root/items/log_details/file_path_2s", 
-		    	"title": "File_path_2s", 
-		    	"type": "array",
-		    	"default": [],
-		    	"items":
-		    	{
-		            "$id": "#root/items/log_details/file_path_2s/items", 
-			    "title": "Items", 
-			    "type": "string",
-			    "default": "",
-			    "examples":
-			    [
-			        "/dir1/file2"
-			    ],
-			    "pattern": "^.*$"
-		    	}
-		    }
-	        }
-	    }
-        }
+	    },
+	    "required":
+	    [
+	        "client_ips", "users", "protocols", "operations", "results",
+		"ids", "file_path_1s", "file_path_2s"
+            ]
+	}
     }
 }

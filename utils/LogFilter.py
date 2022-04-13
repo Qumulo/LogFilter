@@ -41,6 +41,7 @@ LogFilter.py --config path
 
 import shutil
 import sys
+import os
 import argparse
 
 # Import non-os libraries
@@ -95,11 +96,19 @@ class LogFilter(object):
     def Run(self):
                 
         for self.filter in self.filters:
-            self.hostname = self.filter['hostname']
-            self.port_type = self.filter['port_type']
-            self.port = self.filter['port']
 
-            # Store may not exist
+            # Forward definition may not exist
+
+            try:
+                self.forward = self.filter['forward']
+            except KeyError:
+                self.forward = None
+            else:
+                self.hostname = self.forward['hostname']
+                self.port_type = self.forward['port_type']
+                self.port = self.forward['port']
+
+            # Store definition may not exist
 
             try:
                 self.store = self.filter['store']
@@ -161,9 +170,13 @@ class LogFilter(object):
                 self.close_paren()
                 self.write_output("then")
                 self.open_brace()
-            
-            self.write_output("action(type=\"omfwd\" target=\""+self.hostname+"\" port=\""+\
-                              self.port+"\" protocol=\""+self.port_type+"\" template=\"QumuloAuditFormat\")")
+
+            # Do they want to forward to another host?
+
+            if self.forward is not None:
+                self.write_output(f'action(type="omfwd" target="{self.hostname}"' + \
+                                  f' port="{self.port}" protocol="{self.port_type}"' + \
+                                  ' template="QumuloAuditFormat")')
 
             # Do they also want to write it to a file?
 
@@ -346,10 +359,18 @@ class LogFilter(object):
         # required data. It would have failed in the validation routine if
         # it didn't exist
 
-        base_dir = config.dir_name()
+        current_dir = os.getcwd()
+        self.template_file = f'{config.dir_name()}/qumulo-audit.conf.template'
 
-        self.template_file = f'{base_dir}/qumulo-audit.conf.template'
-        self.config_file = "outputs/10-qumulo-audit.conf"
+        # Create an output directory for the final result. Make it as a subdir of the current directory.
+
+        try:
+            os.mkdir(f'{current_dir}/output')
+        except (Exception,) as excpt:
+            self.logger.error(f'Unable to create directory "output", error was {excpt}')
+            sys.exit(1)
+
+        self.config_file = f'{current_dir}/output/10-qumulo-audit.conf'
         self.filters = config.json_data()
 
         # Prepare config file from the template
@@ -387,11 +408,7 @@ def main():
 
     # Validate the config
 
-    try:
-        config.validate()
-    except Exception as err:
-        logger.error(f'Configuration would not validate, error is {err}')
-        sys.exit(1)
+    config.validate()
 
     # Run the configuration creation
 
