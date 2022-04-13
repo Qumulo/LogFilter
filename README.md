@@ -434,7 +434,7 @@ and their proper values. Multiple definitions can be defined inside the square b
    }
 ]
 ```
-There are three main sections in the configuration file `log_filter.json`. 
+There are three main sections in the configuration file `log_filter.json`. With these three sections, you can **forward** filtered logs, **store** filtered logs, or **forward** and **store** filtered logs. The only requirement is that you must have either a **forward** or a **store** section in addition to the **Log Details** section. Of course, as stated, you can also have a **forward** AND **store** section in addition to the **Log Details** section.
 
 1. Forward
   
@@ -480,9 +480,9 @@ Please don't touch other files inside the **config** directory.
 
 We have included three examples of configuration files that perform different types of filtering. These should help you understand how to configure rsyslog to filter and forward different log messages based upon users, protocols, protocol `operations`, etc.
   
-1. Log forwarding to another machine without any filter
+1. Log forwarding and storing without any filter
 
-If you leave the **log details** parameters empty, this indicates you do not wish to define any filters on the Qumulo logs and are only going to forward the Qumulo audit logs to another machine with either TCP or UDP. In the following example, we wish to only forward the audit logs to another host with the UDP protocol. Notice that we are **STORING** the log files in the directory ```/var/log/qumulo/auditlog1```.
+If you leave the **log details** parameters empty, this indicates you do not wish to define any filters on the Qumulo logs and are only going to forward the Qumulo audit logs to another machine with either TCP or UDP in addition to storing them on the rsyslog machine. In the following example, we wish to forward the audit logs to another host with the UDP protocol. Once the forward is complete, those same logs are stored on the current rsyslog machine. Notice that we are **STORING** the log files in the directory ```/var/log/qumulo/auditlog1```.
   
 ```
 [
@@ -513,7 +513,7 @@ If you leave the **log details** parameters empty, this indicates you do not wis
 ]
 ```
 
-2. Log forwarding to another machine filtering for specific protocol `operations`
+2. Log forwarding while filtering for specific protocol `operations`
 
 In this example, we are forwarding the logs to another machine using the TCP protocol. In addition, we wish to filter based upon `including` **ONLY** the `admin` user when using the `api` protocol and they are deleting the nfs export (`nfs_delete_export` protocol operation). Since this is known as an **include** filter, no other log entries are forwarded other than what is listed below. Notice that we are **NOT** storing log files for this definition.
   
@@ -541,13 +541,13 @@ In this example, we are forwarding the logs to another machine using the TCP pro
 ]
 ```
 
-3. Log forwarding to another machine with excluded specified log details
+3. Log forwarding and storing with excluded specified log details
 
 In this example, we are forwarding the logs to another machine using the TCP protocol. In addition, we wish to filter based upon `excluding` certain protocol `operations`; specifically `fs_delete`, `fs_rename`, and `fs_write_data`.
   
 An exclusion is done by putting a **!** in front of the `user`, `protocols`, or `operations` field that you wish to exclude. 
   
-All other log messages **NOT** excluded are forwarded to the hostname and port specified in the definition below. Notice that we are **STORING** the log files in the directory ```/var/log/qumulo/auditlog1```.
+All other log messages **NOT** excluded are forwarded to the hostname and port specified in the definition below. Notice that we are **storing** the log files in the directory ```/var/log/qumulo/auditlog1```.
   
 ```
 [
@@ -569,6 +569,34 @@ All other log messages **NOT** excluded are forwarded to the hostname and port s
          "users" : [],
          "protocols": [],
          "operations": ["!fs_delete", "!fs_rename", "!fs_write_data"],
+         "results": [],
+         "ids": [],
+         "file_path_1s": [],
+         "file_path_2s": []
+      } 
+   }
+]
+```
+  
+4. Storing logs for delete operations only
+
+In this example, we are storing filtered logs based upon `including` only the protocol `operations`; specifically `fs_delete`. You might want to do this because you want to easily scan the audit logs when somebody complains about a file being deleted and they are wondering by whom and when it was done.
+  
+Notice that we are **storing** the log files in the directory ```/var/log/qumulo/auditdelete```.
+  
+```
+[
+      "store":
+      {
+          "name": "AuditDelete",
+          "directory": "/var/log/qumulo/auditdelete"
+      },
+      "log_details": 
+      {
+         "client_ips" : [],
+         "users" : [],
+         "protocols": [],
+         "operations": ["fs_delete"],
          "results": [],
          "ids": [],
          "file_path_1s": [],
