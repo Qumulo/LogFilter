@@ -436,7 +436,7 @@ def Run(args, config, logger):
     logfilter.Run()
     logfilter.TearDown()
 
-    logger.debug('The Rsyslog config file has been generated. You can find it in ./outputs directory.')
+    logger.debug('The Rsyslog config file has been generated. You can find it in ./output directory.')
 
     del logfilter
 
