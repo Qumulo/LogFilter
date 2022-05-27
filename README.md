@@ -221,7 +221,7 @@ The contents of that directory should look like:
 -rw-r--r--  1 someone  somegroup  6972 Mar 17 08:38 README.md
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 config
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 docs
-drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 outputs
+drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 output
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 utils
 -rwxr-xr-x  1 someone  somegroup   301 Mar 17 08:24 LogFilter
 ```
@@ -614,7 +614,7 @@ Run the script in this directory by typing
 
 `./LogFilter --config ./config/log_filters.json` 
 
-in a terminal window. If there are no errors, a rsyslog configuration file will be created in the **outputs** directory.
+in a terminal window. If there are no errors, a rsyslog configuration file will be created in the **output** directory.
 
 ### Verify the configuration file
 
@@ -624,11 +624,11 @@ Before copying the configuration file that you created via **LogFilter**, you ca
 
 ### Copy the new configuration file 
 Rsyslog loads dedicated log file format definitions from the **/etc/rsyslog.d** directory. You will need
-to create a new configuration file (**10-qumulo-audit.conf** inside **outputs**) via the **LogFilter**  script for defining the Qumulo Audit Log format.
+to create a new configuration file (**10-qumulo-audit.conf** inside **output**) via the **LogFilter**  script for defining the Qumulo Audit Log format.
 
 Simply copy this file into **/etc/rsyslog.d**. 
 
-`cp ./outputs/10-qumulo-audit.conf /etc/rsyslog.d/` 
+`cp ./output/10-qumulo-audit.conf /etc/rsyslog.d/` 
 
 ### Restart the rsyslog daemon
 In order for the new Qumulo Audit Log configuration to be active, you must restart the rsyslog daemon on the server.
