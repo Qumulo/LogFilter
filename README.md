@@ -620,7 +620,7 @@ in a terminal window. If there are no errors, a rsyslog configuration file will 
 
 Before copying the configuration file that you created via **LogFilter**, you can verify the config file doesn't have any syntax errors with the command below.
 
-`rsyslogd -f ./outputs/10-qumulo-audit.conf -N7`
+`rsyslogd -f ./output/10-qumulo-audit.conf -N7`
 
 ### Copy the new configuration file 
 Rsyslog loads dedicated log file format definitions from the **/etc/rsyslog.d** directory. You will need
