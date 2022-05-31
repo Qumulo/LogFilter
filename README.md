@@ -221,7 +221,7 @@ The contents of that directory should look like:
 -rw-r--r--  1 someone  somegroup  6972 Mar 17 08:38 README.md
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 config
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 docs
-drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 outputs
+drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 output
 drwxr-xr-x  4 someone  somegroup   128 Mar 17 08:24 utils
 -rwxr-xr-x  1 someone  somegroup   301 Mar 17 08:24 LogFilter
 ```
@@ -344,8 +344,8 @@ The **qumulo** configuration file for logrotate looks like:
 
 The parameters are:
 
-**/var/log/qumulo/*.log** - The directory and files that will be worked on. Since we configured rsyslog
-to store the Qumulo Audit Logs in **/var/log/qumulo**, this is the directory that logrotate should examine.
+**/var/log/qumulo/*.log** - The directory and files that will be worked on. If you are storing the logs
+in multiple directories within **/var/log/qumulo**, then you will need to create multiple entries (see below).
 
 **daily** - How often to examine the Qumulo Audit Logs and determine if they should be rotated. Since,
 logrotate only runs once per day, you can only change this value to **weekly** or **monthly**.
@@ -368,6 +368,34 @@ the format YYYY-mm-dd. So, a log file of **groot-1.log** becomes **groot-1.log.2
 will continue to use the old log files until you inform it that they have changed,
 we have used the included linux script **/usr/lib/rsyslog/rsyslog-rotate**; which will send a TERM signal
 to rsyslog. This TERM signal will inform rsyslog to switch to a new log file.
+
+```
+/var/log/qumulo/auditdelete/*.log {
+        daily
+        missingok
+        notifempty
+        rotate 4
+        size 50M
+        dateext
+        dateformat -%Y-%m-%d
+        postrotate
+             /usr/lib/rsyslog/rsyslog-rotate
+        endscript
+}
+
+  /var/log/qumulo/auditlog1/*.log {
+        daily
+        missingok
+        notifempty
+        rotate 4
+        size 50M
+        dateext
+        dateformat -%Y-%m-%d
+        postrotate
+             /usr/lib/rsyslog/rsyslog-rotate
+        endscript
+}
+```
 
 ## Define Parameters and Run LogFilter Script
 
@@ -406,7 +434,7 @@ and their proper values. Multiple definitions can be defined inside the square b
    }
 ]
 ```
-There are three main sections in the configuration file `log_filter.json`. 
+There are three main sections in the configuration file `log_filter.json`. With these three sections, you can **forward** filtered logs, **store** filtered logs, or **forward** and **store** filtered logs. The only requirement is that you must have either a **forward** or a **store** section in addition to the **Log Details** section. Of course, as stated, you can also have a **forward** AND **store** section in addition to the **Log Details** section.
 
 1. Forward
   
@@ -452,9 +480,9 @@ Please don't touch other files inside the **config** directory.
 
 We have included three examples of configuration files that perform different types of filtering. These should help you understand how to configure rsyslog to filter and forward different log messages based upon users, protocols, protocol `operations`, etc.
   
-1. Log forwarding to another machine without any filter
+1. Log forwarding and storing without any filter
 
-If you leave the **log details** parameters empty, this indicates you do not wish to define any filters on the Qumulo logs and are only going to forward the Qumulo audit logs to another machine with either TCP or UDP. In the following example, we wish to only forward the audit logs to another host with the UDP protocol. Notice that we are **STORING** the log files in the directory ```/var/log/qumulo/auditlog1```.
+If you leave the **log details** parameters empty, this indicates you do not wish to define any filters on the Qumulo logs and are only going to forward the Qumulo audit logs to another machine with either TCP or UDP in addition to storing them on the rsyslog machine. In the following example, we wish to forward the audit logs to another host with the UDP protocol. Once the forward is complete, those same logs are stored on the current rsyslog machine. Notice that we are **STORING** the log files in the directory ```/var/log/qumulo/auditlog1```.
   
 ```
 [
@@ -485,7 +513,7 @@ If you leave the **log details** parameters empty, this indicates you do not wis
 ]
 ```
 
-2. Log forwarding to another machine filtering for specific protocol `operations`
+2. Log forwarding while filtering for specific protocol `operations`
 
 In this example, we are forwarding the logs to another machine using the TCP protocol. In addition, we wish to filter based upon `including` **ONLY** the `admin` user when using the `api` protocol and they are deleting the nfs export (`nfs_delete_export` protocol operation). Since this is known as an **include** filter, no other log entries are forwarded other than what is listed below. Notice that we are **NOT** storing log files for this definition.
   
@@ -513,13 +541,13 @@ In this example, we are forwarding the logs to another machine using the TCP pro
 ]
 ```
 
-3. Log forwarding to another machine with excluded specified log details
+3. Log forwarding and storing with excluded specified log details
 
 In this example, we are forwarding the logs to another machine using the TCP protocol. In addition, we wish to filter based upon `excluding` certain protocol `operations`; specifically `fs_delete`, `fs_rename`, and `fs_write_data`.
   
 An exclusion is done by putting a **!** in front of the `user`, `protocols`, or `operations` field that you wish to exclude. 
   
-All other log messages **NOT** excluded are forwarded to the hostname and port specified in the definition below. Notice that we are **STORING** the log files in the directory ```/var/log/qumulo/auditlog1```.
+All other log messages **NOT** excluded are forwarded to the hostname and port specified in the definition below. Notice that we are **storing** the log files in the directory ```/var/log/qumulo/auditlog1```.
   
 ```
 [
@@ -550,6 +578,34 @@ All other log messages **NOT** excluded are forwarded to the hostname and port s
 ]
 ```
   
+4. Storing logs for delete operations only
+
+In this example, we are storing filtered logs based upon `including` only the protocol `operations`; specifically `fs_delete`. You might want to do this because you want to easily scan the audit logs when somebody complains about a file being deleted and they are wondering by whom and when it was done.
+  
+Notice that we are **storing** the log files in the directory ```/var/log/qumulo/auditdelete```.
+  
+```
+[
+      "store":
+      {
+          "name": "AuditDelete",
+          "directory": "/var/log/qumulo/auditdelete"
+      },
+      "log_details": 
+      {
+         "client_ips" : [],
+         "users" : [],
+         "protocols": [],
+         "operations": ["fs_delete"],
+         "results": [],
+         "ids": [],
+         "file_path_1s": [],
+         "file_path_2s": []
+      } 
+   }
+]
+```
+  
 ### Create the new Qumulo audit log configuration via the LogFilter script
 
 **LogFilter** is the main script file that allows you to create a new Rsyslog configuration file for filtering and forwarding Qumulo audit logs to the defined hosts.
@@ -558,21 +614,21 @@ Run the script in this directory by typing
 
 `./LogFilter --config ./config/log_filters.json` 
 
-in a terminal window. If there are no errors, a rsyslog configuration file will be created in the **outputs** directory.
+in a terminal window. If there are no errors, a rsyslog configuration file will be created in the **output** directory.
 
 ### Verify the configuration file
 
 Before copying the configuration file that you created via **LogFilter**, you can verify the config file doesn't have any syntax errors with the command below.
 
-`rsyslogd -f ./outputs/10-qumulo-audit.conf -N7`
+`rsyslogd -f ./output/10-qumulo-audit.conf -N7`
 
 ### Copy the new configuration file 
 Rsyslog loads dedicated log file format definitions from the **/etc/rsyslog.d** directory. You will need
-to create a new configuration file (**10-qumulo-audit.conf** inside **outputs**) via the **LogFilter**  script for defining the Qumulo Audit Log format.
+to create a new configuration file (**10-qumulo-audit.conf** inside **output**) via the **LogFilter**  script for defining the Qumulo Audit Log format.
 
 Simply copy this file into **/etc/rsyslog.d**. 
 
-`cp ./outputs/10-qumulo-audit.conf /etc/rsyslog.d/` 
+`cp ./output/10-qumulo-audit.conf /etc/rsyslog.d/` 
 
 ### Restart the rsyslog daemon
 In order for the new Qumulo Audit Log configuration to be active, you must restart the rsyslog daemon on the server.
