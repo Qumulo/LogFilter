@@ -365,9 +365,9 @@ class LogFilter(object):
         # Create an output directory for the final result. Make it as a subdir of the current directory.
 
         try:
-            os.mkdir(f'{current_dir}/output')
+            os.makedirs(f'{current_dir}/output', exist_ok=True)
         except (Exception,) as excpt:
-            self.logger.error(f'Unable to create directory "output", error was {excpt}')
+            self.logger.error(f'Problem creating directory "output", error was {excpt}')
             sys.exit(1)
 
         self.config_file = f'{current_dir}/output/10-qumulo-audit.conf'
@@ -436,7 +436,7 @@ def Run(args, config, logger):
     logfilter.Run()
     logfilter.TearDown()
 
-    logger.debug('The Rsyslog config file has been generated. You can find it in ./outputs directory.')
+    logger.debug('The Rsyslog config file has been generated. You can find it in ./output directory.')
 
     del logfilter
 
