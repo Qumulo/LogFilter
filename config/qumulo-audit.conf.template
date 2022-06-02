@@ -7,9 +7,9 @@
 template(name="QumuloAuditFormat" type="list")
 {
   property(name="timestamp" dateFormat="rfc3339")
-  constant(value=",")
+  constant(value=" ")
   property(name="hostname")
-  constant(value=",")
+  constant(value=" qumulo - - - ")
   property(name="msg")
   constant(value="\n")
 }
