@@ -663,6 +663,7 @@ Mar 23 06:25:01 dq2-a-40g rsyslogd[32420]:  [origin software="rsyslogd" swVersio
 ```
 
 **NOTE** the line `Active: active (running)` should be present if everything is running.
+**NOTE** SELINUX should be disabled on RedHat distributions.
 
 ## Additional Documentation
 
