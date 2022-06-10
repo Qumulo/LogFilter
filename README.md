@@ -246,6 +246,14 @@ configuration.
 module(load="imtcp")
 input(type="imtcp" port="514")
 ```
+**NOTE** Red Hat based Linux distributions might have the below configurations
+  ```
+  *.info;mail.none;authpriv.none;cron.none                /var/log/messages
+  ```
+The log level should be changed to "warning" for avoiding Qumulo audit logs in /var/log/messages.
+  ```
+  *.warning;mail.none;authpriv.none;cron.none                /var/log/messages
+  ```
 
 ### /var/log/qumulo directory and permissions
 
